@@ -5,14 +5,16 @@ I didn't get docker ext preinstalled in gitpod. so installed it from extensions.
 
 # create a Dockerfile in backend-flask folder
 inside it copy the flow it needs to execute
-```FROM python:3.10-slim-buster
+```
+FROM python:3.10-slim-buster
 WORKDIR /backend-flask
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 COPY . .
 ENV FLASK_ENV=development
 EXPOSE ${PORT}
-CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0", "--port=4567"]```
+CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0", "--port=4567"]
+```
 
 and save the file
 
@@ -28,7 +30,7 @@ we will get 404 error and that's fine.
 to make it work, create system env variables to access them and run.
 below are the steps it do it
 - `export BACKEND_URL="*"`
-- 'export FRONTEND_URL="*"`
+- `export FRONTEND_URL="*"`
 
 it delete those env variables
 - `unset BACKEND_URL`
@@ -56,13 +58,15 @@ to set the env variables there are few ways to do it
 
 ## Create a new Dockerfile for frontend
 copt the below code into frontend-react-js folder
-```FROM node:16.18
+```
+FROM node:16.18
 ENV PORT=300
 COPY . /frontend-react-js
 WORKDIR /frontend-react-js
 RUN npm install
 EXPOSE ${PORT}
-CMD ["npm", "start"]```
+CMD ["npm", "start"]
+```
 
 # build container
 `docker build -t frontend-react-js ./frontend-react-js`
