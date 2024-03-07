@@ -99,3 +99,31 @@ services:
       - ./frontend-react-js:/frontend-react-js
 ```
 
+## new addition to docker-compose.yml
+```
+dymanodb-local:
+    user: root
+    command: "-jar DynamoDBLocal.jar --sharedDb -dbPath ./data"
+    image: "amazon/dynamodb-local:latest"
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    volumes:
+      - ".docker/dynamodb:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
+  db:
+    image: postgres:13-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+```
+
+after adding this run `docker compose up` and make ports public
+
+in new terminal run `psql -Upostgres -h localhost`
+password is password
