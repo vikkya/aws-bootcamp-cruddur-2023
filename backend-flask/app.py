@@ -32,7 +32,7 @@ tracer = trace.get_tracer(__name__)
 app = Flask(__name__)
 # honeycomb
 FlaskInstrumentor().instrument_app(app)
-RequestsIntrumentor().instrument()
+RequestsInstrumentor().instrument()
 
 frontend = os.getenv('FRONTEND_URL')
 backend = os.getenv('BACKEND_URL')
