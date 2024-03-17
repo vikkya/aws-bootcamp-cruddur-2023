@@ -14,7 +14,26 @@ from services.messages import *
 from services.create_message import *
 from services.show_activity import *
 
+# honeycomb
+from openelementry import trace
+from openelementry.instrumentation.flask import FlaskInstrumentor
+from openelementry.instrumentation.requests import RequestsInstrumentor
+from openelementry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from openelementry.sdk.trace import TraceProvider
+from openelementry.sdk.trace.export import BatchSpanProcessor
+
+# honeycomb
+provider = TraceProvider()
+processor = BatchSpanProcessor(OTLPSpanExporter())
+provider.add_span_processor(processor)
+trace.set_trace_provider(provider)
+tracer = trace.get_tracer(__name__)
+
 app = Flask(__name__)
+# honeycomb
+FlaskInstrumentor().instrument_app(app)
+RequestsIntrumentor().instrument()
+
 frontend = os.getenv('FRONTEND_URL')
 backend = os.getenv('BACKEND_URL')
 origins = [frontend, backend]
