@@ -4,7 +4,6 @@ import React from "react";
 import { signOut } from 'aws-amplify/auth';
 
 // [TODO] Authenication
-import Cookies from 'js-cookie'
 
 export default function ProfileInfo(props) {
   const [popped, setPopped] = React.useState(false);
