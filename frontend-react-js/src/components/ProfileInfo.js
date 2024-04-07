@@ -1,6 +1,7 @@
 import './ProfileInfo.css';
 import {ReactComponent as ElipsesIcon} from './svg/elipses.svg';
 import React from "react";
+import { signOut } from 'aws-amplify/auth';
 
 // [TODO] Authenication
 import Cookies from 'js-cookie'
@@ -12,16 +13,13 @@ export default function ProfileInfo(props) {
     setPopped(!popped)
   }
 
-  const signOut = async () => {
-    console.log('signOut')
-    // [TODO] Authenication
-    Cookies.remove('user.logged_in')
-    //Cookies.remove('user.name')
-    //Cookies.remove('user.username')
-    //Cookies.remove('user.email')
-    //Cookies.remove('user.password')
-    //Cookies.remove('user.confirmation_code')
-    window.location.href = "/"
+  const signOutHandle = async () => {
+    try {
+        await signOut({ global: true });
+        window.location.href = "/"
+    } catch (error) {
+        console.log('error signing out: ', error);
+    }
   }
 
   const classes = () => {
@@ -35,7 +33,7 @@ export default function ProfileInfo(props) {
   return (
     <div className={classes()}>
       <div className="profile-dialog">
-        <button onClick={signOut}>Sign Out</button> 
+        <button onClick={signOutHandle}>Sign Out</button> 
       </div>
       <div className="profile-info" onClick={click_pop}>
         <div className="profile-avatar"></div>
