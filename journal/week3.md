@@ -31,4 +31,4 @@ copy the code and paste in app.js `import { Amplify } from 'aws-amplify'`
 
 there are lot of changes to aws-amplify v6
 go through the documentation
-https://docs.amplify.aws/javascript/build-a-backend/auth/auth-migration-guide/
+https://docs.amplify.aws/javascript/build-a-backend/auth/auth-migration-guide
