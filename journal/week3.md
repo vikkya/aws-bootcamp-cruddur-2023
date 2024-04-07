@@ -13,7 +13,8 @@ do `npm i aws-amplify --save`
 goto app.js
 copy the code and paste in app.js `import { Amplify } from 'aws-amplify'`
 
-`Amplify.configure({
+```
+Amplify.configure({
   "AWS_PROJECT_REGION": process.env.REACT_AWS_PROJECT_REGION,
   "aws_cognito_region": process.env.REACT_APP_AWS_COGNITO_REGION,
   "aws_user_pools_id": process.env.REACT_APP_AWS_USER_POOLS_ID,
@@ -26,7 +27,7 @@ copy the code and paste in app.js `import { Amplify } from 'aws-amplify'`
     userPoolId: process.env.REACT_APP_AWS_USER_POOLS_ID,         // OPTIONAL - Amazon Cognito User Pool ID
     userPoolWebClientId: process.env.REACT_APP_AWS_USER_POOLS_WEB_CLIENT_ID,   // OPTIONAL - Amazon Cognito Web Client ID (26-char alphanumeric string)
   }
-});`
+});```
 
 
 there are lot of changes to aws-amplify v6
