@@ -95,3 +95,7 @@ const signOutHandle = async () => {
     }
   }
 ```
+create a user in AWS cognito user pool UI.if we create from aws we will get invalid error
+after we do the above steps we will get invalid user error to resolve it run the below cmd
+` aws cognito admin-set-user-password --user-pool-id <paste pool id> --username <username> --password <password> --permanent `
+
