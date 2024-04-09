@@ -25,6 +25,8 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor, SimpleSpanProcess
 from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
 
+from lib.cognito_token_verification import CognitoTokenVerification, TokenVerifyError
+
 import watchtower
 import logging
 from time import strftime
@@ -58,6 +60,12 @@ app = Flask(__name__)
 FlaskInstrumentor().instrument_app(app)
 RequestsInstrumentor().instrument()
 
+cognito_token_verification = CognitoTokenVerification(
+  user_pool_id=os.getenv('AWS_COGNITO_USER_POOL_ID'),
+  user_pool_client_id=os.getenv('AWS_COGNITO_USER_POOL_CLIENT_ID'),
+  region=os.getenv('AWS_DEFAULT_REGION')
+)
+
 # xray_url = os.getenv("AWS_XRAY_URL")
 # xray_recorder.configure(service="backend-flask", dynamic_naming=xray_url)
 # XRayMiddleware(app, xray_recorder)
@@ -68,28 +76,27 @@ origins = [frontend, backend]
 cors = CORS(
   app, 
   resources={r"/api/*": {"origins": origins}},
-  expose_headers="location,link",
-  allow_headers="content-type,if-modified-since",
+  headers=['Content-Type', 'Authorization'], 
+  expose_headers='Authorization',
   methods="OPTIONS,GET,HEAD,POST"
 )
 
-rollbar_access_token = os.getenv('ROLLBAR_ACCESS_TOKEN')
-with app.app_context():
-  # def init_rollbar():
-  """init rollbar module"""
-  print("inside app context", type(rollbar_access_token), os.getenv('ROLLBAR_ACCESS_TOKEN'))
-  rollbar.init(
-      # access token
-      rollbar_access_token,
-      # environment name
-      'production',
-      # server root directory, makes tracebacks prettier
-      root=os.path.dirname(os.path.realpath(__file__)),
-      # flask already sets up logging
-      allow_logging_basic_config=False)
+# rollbar_access_token = os.getenv('ROLLBAR_ACCESS_TOKEN')
+# with app.app_context():
+#   # def init_rollbar():
+#   """init rollbar module"""
+#   rollbar.init(
+#       # access token
+#       rollbar_access_token,
+#       # environment name
+#       'production',
+#       # server root directory, makes tracebacks prettier
+#       root=os.path.dirname(os.path.realpath(__file__)),
+#       # flask already sets up logging
+#       allow_logging_basic_config=False)
 
-  # send exceptions from `app` to rollbar, using flask's signal system.
-  got_request_exception.connect(rollbar.contrib.flask.report_exception, app)
+#   # send exceptions from `app` to rollbar, using flask's signal system.
+#   got_request_exception.connect(rollbar.contrib.flask.report_exception, app)
 
 # @app.after_request
 # def after_request(response):
@@ -97,11 +104,11 @@ with app.app_context():
 #     LOGGER.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status)
 #     return response
 
-@app.route('/rollbar/test')
-def rollbar_test():
-    print("inside rollbar", type(rollbar_access_token), os.getenv('ROLLBAR_ACCESS_TOKEN'))
-    rollbar.report_message('Hello World!', 'warning')
-    return "Hello World!"
+# @app.route('/rollbar/test')
+# def rollbar_test():
+#     print("inside rollbar", type(rollbar_access_token), os.getenv('ROLLBAR_ACCESS_TOKEN'))
+#     rollbar.report_message('Hello World!', 'warning')
+#     return "Hello World!"
 
 @app.route("/api/message_groups", methods=['GET'])
 def data_message_groups():
@@ -141,7 +148,19 @@ def data_create_message():
 @app.route("/api/activities/home", methods=['GET'])
 def data_home():
   # data = HomeActivities.run(logger=LOGGER)
-  data = HomeActivities.run()
+  print("hlo")
+  # app.logger.info(request.headers)
+  access_token = CognitoTokenVerification.extract_access_token(request.headers)
+  # app.logger.info(access_token)
+  # access_token = extract_access_token(request.headers)
+  try:
+    claims = cognito_token_verification.verify(access_token)
+    app.logger.info(claims)
+    cognito_user_id = claims['username']
+    data = HomeActivities.run(cognito_user_id=cognito_user_id)
+  except TokenVerifyError as e:
+    _ = request.data
+    data = HomeActivities.run()
   return data, 200
 
 @app.route("/api/activities/notifications", methods=['GET'])

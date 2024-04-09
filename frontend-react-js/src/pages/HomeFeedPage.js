@@ -1,6 +1,6 @@
 import './HomeFeedPage.css';
 import React from "react";
-import { getCurrentUser, fetchUserAttributes  } from 'aws-amplify/auth';
+import { getCurrentUser, fetchUserAttributes, fetchAuthSession  } from 'aws-amplify/auth';
 import DesktopNavigation  from '../components/DesktopNavigation';
 import DesktopSidebar     from '../components/DesktopSidebar';
 import ActivityFeed from '../components/ActivityFeed';
@@ -19,10 +19,21 @@ export default function HomeFeedPage() {
   
 
   const loadData = async () => {
+    let token;
+    try{
+      const { accessToken } = (await fetchAuthSession()).tokens ?? {};
+      token = localStorage[`CognitoIdentityServiceProvider.${accessToken['payload']['client_id']}.${accessToken['payload']['username']}.accessToken`]
+    }
+    catch (error){
+      console.log("have to do with token. ")
+    }
     try {
       const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/home`
       const res = await fetch(backend_url, {
-        method: "GET"
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       let resJson = await res.json();
       if (res.status === 200) {
