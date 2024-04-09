@@ -99,3 +99,102 @@ create a user in AWS cognito user pool UI.if we create from aws we will get inva
 after we do the above steps we will get invalid user error to resolve it run the below cmd
 ` aws cognito admin-set-user-password --user-pool-id <paste pool id> --username <username> --password <password> --permanent `
 
+## SignUpPage.js
+
+` import { autoSignIn, signUp } from 'aws-amplify/auth'; `
+
+```
+const onsubmit = async (event) => {
+    event.preventDefault();
+    setErrors('')
+    try {
+        const { user } = await signUp({
+          username: email,
+          password: password,
+          options: {
+            userAttributes: {
+              name: name,
+              email: email,
+              preferred_username: username,
+            },
+            autoSignIn: true
+          },
+        });
+        console.log(user);
+        window.location.href = `/confirm?email=${email}`
+    } catch (error) {
+        console.log(error);
+        setErrors(error.message)
+    }
+    return false
+  }
+
+```
+
+## ConfirmationPage.js
+
+` import { resendSignUpCode, confirmSignUp } from 'aws-amplify/auth'; `
+
+```
+const resend_code = async (event) => {
+    setErrors('')
+    try {
+      await resendSignUpCode({username: email});
+      console.log('code resent successfully');
+      setCodeSent(true)
+    } catch (err) {
+      // does not return a code
+      // does cognito always return english
+      // for this to be an okay match?
+      console.log(err)
+      if (err.message == 'Username cannot be empty'){
+        setErrors("You need to provide an email in order to send Resend Activiation Code")   
+      } else if (err.message == "Username/client id combination not found."){
+        setErrors("Email is invalid or cannot be found.")   
+      }
+    }
+  }
+
+  const onsubmit = async (event) => {
+    event.preventDefault();
+    setErrors('')
+    try {
+      await confirmSignUp({username: email, confirmationCode: code});
+      window.location.href = "/signin"
+    } catch (error) {
+      setErrors(error.message)
+    }
+    return false
+  }
+
+```
+
+## RecoverPage.js
+
+` import { resetPassword, confirmResetPassword } from 'aws-amplify/auth'; `
+
+```
+const onsubmit_send_code = async (event) => {
+    event.preventDefault();
+    setErrors('')
+    console.log(username)
+    resetPassword({username})
+    .then((data) => setFormState('confirm_code') )
+    .catch((err) => setErrors(err.message) );
+    return false
+  }
+
+  const onsubmit_confirm_code = async (event) => {
+  event.preventDefault();
+  setErrors('')
+  if (password == passwordAgain){
+    confirmResetPassword({username, confirmationCode: code, newPassword: password})
+    .then((data) => setFormState('success'))
+    .catch((err) => setErrors(err.message) );
+  } else {
+    setErrors('Passwords do not match')
+  }
+  return false
+}
+
+```
