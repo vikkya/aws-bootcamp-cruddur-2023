@@ -17,7 +17,7 @@ export default function SigninPage() {
     event.preventDefault();
     signIn({username:email, password})
       .then(user => {
-        localStorage.setItem("access_token", user.signInUserSession.accessToken.jwtToken)
+        // localStorage.setItem("access_token", user.signInUserSession.accessToken.jwtToken)
         window.location.href = "/"
       })
       .catch(error => { 
