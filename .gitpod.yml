@@ -11,10 +11,6 @@ tasks:
       cd /workspace
       sudo ./aws/install
       cd $THEIA_WORKSPACE_ROOT
-    # command: |
-    #   cd /workspace
-    #   sudo ./aws/install
-    #   cd $THEIA_WORKSPACE_ROOT
   - name: postgres
     before: echo "Hello postgres"
     command: |
@@ -30,6 +26,8 @@ tasks:
 vscode:
   extensions:
     - 42Crunch.vscode-openapi
+    - ms-azuretools.vscode-docker
+    - cweijan.dbclient-jdbc
 
 ports:
   - name: frontend

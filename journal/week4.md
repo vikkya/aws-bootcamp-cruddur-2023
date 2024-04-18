@@ -66,3 +66,10 @@ CREATE TABLE public.activities (
   created_at TIMESTAMP default current_timestamp NOT NULL
 );
 ```
+
+## auto run all db, table creation and insertion
+
+change db-setup permission to executable 
+` chmod u+x ./bin/db-setup `
+after that run ./bin/db-setup
+
