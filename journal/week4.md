@@ -73,3 +73,20 @@ change db-setup permission to executable
 ` chmod u+x ./bin/db-setup `
 after that run ./bin/db-setup
 
+
+## add layers to lambda
+- create lambda function
+- in lambda page left side check layers option
+- create layer. name can be anything, architecture x86_64
+- to upload a zip, 
+  - download that package from pypi.org and for linux env check python version and download whl file
+  - extract that whl file and copy that to a folder called python
+  - zip the python folder (ex. layer.zip)
+  - upload it to lambda layer
+- in code tab go bottom of the page to layers
+- and choose arn or custom layer
+- add the arn or custom layer and version
+
+this should do the job.
+ref video [Video 1](https://www.youtube.com/watch?v=_TUNZuvjyDQ)
+[Video 2](https://www.youtube.com/watch?v=lrEAu75zhNI)
