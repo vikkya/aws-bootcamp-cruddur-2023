@@ -2,17 +2,46 @@ import './ActivityForm.css';
 import React from "react";
 import process from 'process';
 import {ReactComponent as BombIcon} from './svg/bomb.svg';
+import { getCurrentUser, fetchUserAttributes  } from 'aws-amplify/auth';
 
 export default function ActivityForm(props) {
   const [count, setCount] = React.useState(0);
   const [message, setMessage] = React.useState('');
   const [ttl, setTtl] = React.useState('7-days');
+  const [user, setUser] = React.useState(null);
 
   const classes = []
   classes.push('count')
   if (240-count < 0){
     classes.push('err')
   }
+
+  const getCurrentUserInfo = async () => {
+    const {
+      username,
+      userId: id
+    } = await getCurrentUser();
+  
+    const attributes = await fetchUserAttributes();
+  
+    return {
+      id,
+      username,
+      attributes
+    };
+  }
+
+  React.useEffect(()=>{
+    getCurrentUserInfo()
+    .then((cognito_user) => {
+        setUser({
+          display_name: cognito_user.attributes.name,
+          handle: cognito_user.attributes.preferred_username,
+          user_uuid: cognito_user.username
+        })
+    })
+    .catch((err) => console.log(err));
+  }, [])
 
   const onsubmit = async (event) => {
     event.preventDefault();
@@ -27,7 +56,8 @@ export default function ActivityForm(props) {
         },
         body: JSON.stringify({
           message: message,
-          ttl: ttl
+          ttl: ttl,
+          user_details: user
         }),
       });
       let data = await res.json();

@@ -28,7 +28,7 @@ vscode:
   extensions:
     - 42Crunch.vscode-openapi
     - ms-azuretools.vscode-docker
-    - cweijan.dbclient-jdbc
+    - cweijan.vscode-database-client2
 
 ports:
   - name: frontend

@@ -189,10 +189,10 @@ def data_search():
 @app.route("/api/activities", methods=['POST','OPTIONS'])
 @cross_origin()
 def data_activities():
-  user_handle  = 'andrewbrown'
   message = request.json['message']
   ttl = request.json['ttl']
-  model = CreateActivity.run(message, user_handle, ttl)
+  user_details = request.json['user_details']
+  model = CreateActivity.run(message, user_details, ttl)
   if model['errors'] is not None:
     return model['errors'], 422
   else:
