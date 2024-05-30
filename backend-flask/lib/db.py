@@ -53,7 +53,7 @@ class Db:
                     "{}"
                 else:
                     return json[0]
-    def query_commit(self, sql, **kwargs):
+    def query_commit(self, sql, kwargs={}):
         pattern = r"\bRETURNING\b"
         is_returning_id = re.search(pattern, sql, flags=re.IGNORECASE)
         try:

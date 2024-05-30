@@ -11,14 +11,36 @@ import MessagesForm from '../components/MessageForm';
 import checkAuth from '../lib/CheckAuth';
 import getToken from '../lib/GetToken';
 
-
 export default function MessageGroupPage() {
+  const [otherUser, setOtherUser] = React.useState([]);
   const [messageGroups, setMessageGroups] = React.useState([]);
   const [messages, setMessages] = React.useState([]);
   const [popped, setPopped] = React.useState([]);
   const [user, setUser] = React.useState(null);
   const dataFetchedRef = React.useRef(false);
   const params = useParams();
+
+  const loadUserShortData = async () => {
+    let token = await getToken();
+    try {
+      const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/users/@${params.handle}/short`
+      const res = await fetch(backend_url, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        method: "GET"
+      });
+      let resJson = await res.json();
+      if (res.status === 200) {
+        console.log('other user:',resJson)
+        setOtherUser(resJson)
+      } else {
+        console.log(res)
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };  
 
   const loadMessageGroupsData = async () => {
     let token = await getToken();
@@ -39,27 +61,6 @@ export default function MessageGroupPage() {
     } catch (err) {
       console.log(err);
     }
-  };  
-
-  const loadMessageGroupData = async () => {
-    let token = await getToken();
-    try {
-      const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/messages/${params.message_group_uuid}`
-      const res = await fetch(backend_url, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
-        method: "GET"
-      });
-      let resJson = await res.json();
-      if (res.status === 200) {
-        setMessages(resJson)
-      } else {
-        console.log(res)
-      }
-    } catch (err) {
-      console.log(err);
-    }
   };
 
   React.useEffect(()=>{
@@ -68,14 +69,14 @@ export default function MessageGroupPage() {
     dataFetchedRef.current = true;
 
     loadMessageGroupsData();
-    loadMessageGroupData();
+    loadUserShortData();
     checkAuth(setUser);
   }, [])
   return (
     <article>
-      <DesktopNavigation user={user} active={'messages'} setPopped={setPopped} />
+      <DesktopNavigation user={user} active={'home'} setPopped={setPopped} />
       <section className='message_groups'>
-        <MessageGroupFeed message_groups={messageGroups} />
+        <MessageGroupFeed otherUser={otherUser} message_groups={messageGroups} />
       </section>
       <div className='content messages'>
         <MessagesFeed messages={messages} />

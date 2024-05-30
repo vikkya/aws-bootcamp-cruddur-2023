@@ -1,13 +1,14 @@
 import './HomeFeedPage.css';
 import React from "react";
-import { getCurrentUser, fetchUserAttributes, fetchAuthSession  } from 'aws-amplify/auth';
 import DesktopNavigation  from '../components/DesktopNavigation';
 import DesktopSidebar     from '../components/DesktopSidebar';
 import ActivityFeed from '../components/ActivityFeed';
 import ActivityForm from '../components/ActivityForm';
 import ReplyForm from '../components/ReplyForm';
 
-// [TODO] Authenication
+// Authenication
+import checkAuth from '../lib/CheckAuth';
+import getToken from '../lib/GetToken';
 
 export default function HomeFeedPage() {
   const [activities, setActivities] = React.useState([]);
@@ -19,14 +20,7 @@ export default function HomeFeedPage() {
   
 
   const loadData = async () => {
-    let token;
-    try{
-      const { accessToken } = (await fetchAuthSession()).tokens ?? {};
-      token = localStorage[`CognitoIdentityServiceProvider.${accessToken['payload']['client_id']}.${accessToken['payload']['username']}.accessToken`]
-    }
-    catch (error){
-      console.log("have to do with token. ")
-    }
+    let token = await getToken();
     try {
       const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/home`
       const res = await fetch(backend_url, {
@@ -46,39 +40,13 @@ export default function HomeFeedPage() {
     }
   };
 
-  const getCurrentUserInfo = async () => {
-    const {
-      username,
-      userId: id
-    } = await getCurrentUser();
-  
-    const attributes = await fetchUserAttributes();
-  
-    return {
-      id,
-      username,
-      attributes
-    };
-  }
-
-  const checkAuth = async () => {
-    getCurrentUserInfo()
-    .then((cognito_user) => {
-        setUser({
-          display_name: cognito_user.attributes.name,
-          handle: cognito_user.attributes.preferred_username,
-        })
-    })
-    .catch((err) => console.log(err));
-  };
-
   React.useEffect(()=>{
     //prevents double call
     if (dataFetchedRef.current) return;
     dataFetchedRef.current = true;
 
     loadData();
-    checkAuth();
+    checkAuth(setUser);
   }, [])
 
   return (

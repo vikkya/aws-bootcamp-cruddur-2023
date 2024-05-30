@@ -7,8 +7,8 @@ import ActivityFeed from '../components/ActivityFeed';
 import ActivityForm from '../components/ActivityForm';
 import ReplyForm from '../components/ReplyForm';
 
-// [TODO] Authenication
-import Cookies from 'js-cookie'
+// Authenication
+import getToken from '../lib/GetToken';
 
 export default function NotificationsFeedPage() {
   const [activities, setActivities] = React.useState([]);
@@ -19,9 +19,13 @@ export default function NotificationsFeedPage() {
   const dataFetchedRef = React.useRef(false);
 
   const loadData = async () => {
+    let token = await getToken();
     try {
       const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/notifications`
       const res = await fetch(backend_url, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
         method: "GET"
       });
       let resJson = await res.json();
