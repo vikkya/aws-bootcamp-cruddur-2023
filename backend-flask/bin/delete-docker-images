@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+arr=("192d770adcaa", "528fec31e2b0", "f8bf785206f8", "d60f254b17b7", "f6d4e222d6ba", "9b064b9262d1", "d72411cfb49a", "c90beb698764", "78d0f97af903", "dad8ee106fdf", "e9ce582f3d98", "11e5f513e676", "7467d89f990a", "a2085a0dd4c6", "b6fd79219ee9", "0c84e7765276", "5effcb681b6f", "07b237a0cfc4", "f972dace3771", "db166d8a6633", "0048e4071513", "00654e50795b", "94d8c0e2ef3c", "5f67e6d14b4b", "af6ba03aa348", "041a18c591e8", "7407636ea653", "af17f792bc74", "a7286edd66fc", "2d087adb2c85", "f82a49d9c477", "d282e48e81a7", "6aab0b1c2246", "34acd35127f7", "98bb903c8050", "2300c8e0f59e")
+
+for id in "${arr[@]}"
+do
+    echo "delete docker image id $id"
+    docker rmi $id
+done

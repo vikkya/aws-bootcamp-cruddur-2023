@@ -1,0 +1,14 @@
+## aws services used in the project
+- ec2
+- ecs
+- iam
+- systems manager
+- cloudwatch
+- ecr
+- dynamodb
+- lambda
+- cognito
+- rds
+- billing and cost management
+- key management service
+- x-ray
