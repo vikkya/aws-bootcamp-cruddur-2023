@@ -32,6 +32,8 @@ Amplify.configure({
   }
 });
 
+console.log("Vikky")
+console.log(process.env.REACT_APP_AWS_USER_POOLS_ID)
 const router = createBrowserRouter([
   {
     path: "/",

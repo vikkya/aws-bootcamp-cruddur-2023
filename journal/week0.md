@@ -26,12 +26,12 @@ we created a budget of $1 from cli.
 
 Then create a sns topic using cli
 1. `aws sns create-topic --name billing-alarm`
-2. above cmd will output an arn `arn:aws:sns:ap-south-1:706811176303:billing-alarm`
+2. above cmd will output an arn `arn:aws:sns:ap-south-1:339713035107:billing-alarm`
 3. after that create sns subscribe
 4. `aws sns subscribe \
-    --topic-arn arn:aws:sns:us-west-2:123456789012:my-topic \
+    --topic-arn arn:aws:sns:ap-south-1:339713035107:billing-alarm \
     --protocol email \
-    --notification-endpoint my-email@example.com`
+    --notification-endpoint ytubeindia2@gmail.com`
 
 cloud watch alarm
 1. `aws cloudwatch put-metric-alarm --cli-input-json file://aws/json/alarms-config.json`

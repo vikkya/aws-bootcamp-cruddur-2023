@@ -12,3 +12,7 @@
 - billing and cost management
 - key management service
 - x-ray
+
+create new keys for all variables in docker
+
+changes -> 706811176303 to new one
