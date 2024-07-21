@@ -9,7 +9,7 @@ connection_url = os.getenv("CONNECTION_URL")
 conn = None
 try:
   print('attempting connection')
-  conn = psycopg.connect(connection_url)
+  conn = psycopg.connect(pytho)
   print("Connection successful!")
 except psycopg.Error as e:
   print("Unable to connect to the database:", e)

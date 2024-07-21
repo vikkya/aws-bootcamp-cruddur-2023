@@ -1,5 +1,6 @@
 # from docker hub we take python:3 image into our docker container
-FROM 706811176303.dkr.ecr.ap-south-1.amazonaws.com/cruddur-python:3.10-slim-buster
+# FROM 706811176303.dkr.ecr.ap-south-1.amazonaws.com/cruddur-python:3.10-slim-buster
+FROM 339713035107.dkr.ecr.ap-south-1.amazonaws.com/cruddur-python:3.10-slim-buster
 
 # this will make a folder in docker container
 WORKDIR /backend-flask

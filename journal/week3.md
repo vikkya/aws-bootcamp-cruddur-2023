@@ -5,6 +5,10 @@ use all deafult options to create the user pool
 don't use sms verification, it will be charged. Use email.
 attributes to save (name, email)
 
+if you get any error like this
+` Username cannot be of email format, since user pool is configured for email alias`
+while creating the user pool, tick email only.
+
 after cognito setup in aws account, setup amplify  in your code
 
 cd into fronten-react-js

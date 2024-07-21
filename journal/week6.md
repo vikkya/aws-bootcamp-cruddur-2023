@@ -4,11 +4,11 @@ bin/db/test is to check the connection is establised or not in production
 
 bin/flask/health-check is to check if flask server is running or not
 
-create cloudwatch log group cruddur/fargate-cluster
+create cloudwatch log group cruddur
 
 ```
-aws logs create-log-group --log-group-name cruddur/fargate-cluster
-aws logs put-retention-policy --log-group=name cruddur/fargate-cluster --retentaion-in-days 1
+aws logs create-log-group --log-group-name "cruddur"
+aws logs put-retention-policy --log-group-name "cruddur" --retention-in-days 1
 ```
 
 create ECS fargate cluster 
@@ -54,6 +54,26 @@ after python image is created and pushed to ecr, we are going to do the same for
 
 ```
 aws ecr create-repository --repository-name backend-flask --image-tag-mutability MUTABLE
+```
+
+create ecr backend url variable
+```
+export ECR_BACKEND_FLASK_URL="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/backend-flask"
+```
+
+before we push anything to ecr, we need to build docker image
+to build docker image
+```
+docker build -t backend-flask .
+```
+
+tag that image we built with latest
+```
+docker tag backend-flask:latest $ECR_BACKEND_FLASK_URL:latest
+```
+push that image to repo
+```
+docker push $ECR_BACKEND_FLASK_URL:latest
 ```
 
 and now we create a service to our ecs cluster, and to create a service we need a task definition
@@ -144,8 +164,99 @@ add cruddur cluster security group
 ```
 export CRUD_CLUSTER_SG=$(aws ec2 create-security-group \
   --group-name cruddur-ecs-cluster-sg \
-  --description "Security group for Cruddur ECS ECS cluster" \
+  --description "Security group for Cruddur ECS cluster" \
   --vpc-id $DEFAULT_VPC_ID \
   --query "GroupId" --output text)
 echo $CRUD_CLUSTER_SG
 ```
+
+add inbound port 80 to the ecs sg
+```
+aws ec2 authorize-security-group-ingress \
+    --group-id $CRUD_CLUSTER_SG \
+    --protocol tcp \
+    --port 80 \
+    --cidr 0.0.0.0/0
+```
+create service for ecs cluster
+compute option - launch type
+launch type  - farget and latest
+deployment config
+application type - service
+family 
+backend-flask, version latest
+service name - backend-flask
+service type
+replica
+1
+service connect - enable it
+networking
+vpc -default
+security group - select the one which we created on above (cruddur-ecs-cluster-sg)
+click create service
+
+# Create service via cli
+create service-backend-flask.json in aws/json
+
+execute this command to create a service
+```
+aws ecs create-service --cli-input-json file://aws/json/service-backend-flask.json
+```
+
+
+to get the service started we need below permission, so added it to any new policy or existing policy
+```
+"ecr:GetAuthorizationToken",
+"logs:CreateLogStream",
+"logs:PutLogEvents",
+"ecr:BatchCheckLayerAvailability",
+"ecr:GetDownloadUrlForLayer",
+"ecr:BatchGetImage"
+```
+
+now we are trying to connect to container with ecs execute-command
+```
+aws ecs execute-command  \
+    --region $AWS_DEFAULT_REGION \
+    --cluster cruddur \
+    --task 048c6d33d5514527bbe67fd12db17223 \
+    --container backend-flask \
+    --command "/bin/bash" \
+    --interactive
+```
+arn:aws:ecs:ap-south-1:339713035107:task/cruddur/9af3c3ebdb7a4803bd8c7c96b022ee7b
+to run above cmd we need session manager plugin
+download for linux [url](https://docs.aws.amazon.com/systems-manager/latest/userguide/install-plugin-debian-and-ubuntu.html)
+```
+curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
+```
+
+```
+sudo dpkg -i session-manager-plugin.deb
+```
+
+## creating load balancer
+goto ec2- load balancer
+give in all the requires details
+create a new security group
+cruddur-alb-sg -> inbound rule -> open to HTTP and HTTPS to anywhere
+edit the ecs cluster sg inbound rule to connect to above sg
+add the cruddur-alb-sg to the loab balancer
+create a new target group for backend-flask and frontend-reactjs
+on port 4567 and 3000 respectively
+add those target-groups to our load balancer
+create load balancer
+
+
+after alb is created
+goto cluster sg , edit inbound rule, add a new rule
+port 4567, custom tcp, source to alb sg
+
+
+added this alb to ecs cluster service
+check the service-backend-flask.json file to loadBalancer
+
+delete the service if any in our cluster
+
+and run the create-service cli
+
