@@ -9,6 +9,7 @@ import ReplyForm from '../components/ReplyForm';
 
 // Authenication
 import getToken from '../lib/GetToken';
+import Cookies from 'js-cookie'
 
 export default function NotificationsFeedPage() {
   const [activities, setActivities] = React.useState([]);

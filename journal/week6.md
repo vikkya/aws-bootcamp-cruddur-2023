@@ -260,3 +260,10 @@ delete the service if any in our cluster
 
 and run the create-service cli
 
+## Frontend react js - container making
+
+Create a Dockerfile.prod and copy the content into it
+create nginx.conf and copy the content into it
+
+cd into frontend
+npm run build
