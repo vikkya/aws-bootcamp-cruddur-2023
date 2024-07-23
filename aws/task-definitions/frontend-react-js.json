@@ -3,13 +3,25 @@
     "executionRoleArn": "arn:aws:iam::339713035107:role/CruddurServiceExecutionRole",
     "taskRoleArn": "arn:aws:iam::339713035107:role/CruddurTaskRole",
     "networkMode": "awsvpc",
+    "cpu": "256",
+    "memory": "512",
+    "requiresCompatibilities": [ 
+      "FARGATE" 
+    ],
     "containerDefinitions": [
       {
         "name": "frontend-react-js",
-        "image": "BACKEND_FLASK_IMAGE_URL",
-        "cpu": 256,
-        "memory": 256,
+        "image": "339713035107.dkr.ecr.ap-south-1.amazonaws.com/frontend-react-js",
         "essential": true,
+        "healthCheck": {
+          "command": [
+            "CMD-SHELL",
+            "curl -f http://localhost:3000 || exit 1"
+          ],
+          "interval": 30,
+          "timeout": 5,
+          "retries": 3
+        },
         "portMappings": [
           {
             "name": "frontend-react-js",

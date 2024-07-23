@@ -267,3 +267,51 @@ create nginx.conf and copy the content into it
 
 cd into frontend
 npm run build
+
+## create a repo
+```
+aws ecr create-repository \
+  --repository-name frontend-react-js \
+  --image-tag-mutability MUTABLE
+```
+
+export the ecr url
+```
+export ECR_FRONTEND_REACT_URL="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/frontend-react-js"
+echo $ECR_FRONTEND_REACT_URL
+```
+
+add port 3000 to ecs cluster sg inbound taffic
+
+build image
+```
+docker build \
+--build-arg REACT_APP_BACKEND_URL="http://cruddur-alb-1426206816.ap-south-1.elb.amazonaws.com:4567" \
+--build-arg REACT_APP_AWS_PROJECT_REGION="$AWS_DEFAULT_REGION" \
+--build-arg REACT_APP_AWS_COGNITO_REGION="$AWS_DEFAULT_REGION" \
+--build-arg REACT_APP_AWS_USER_POOLS_ID="ap-south-1_BPT0GRe9s" \
+--build-arg REACT_APP_CLIENT_ID="4fa5voa45rvabik984t0kjdu3h" \
+-t frontend-react-js \
+-f Dockerfile.prod \
+.
+```
+tag the image
+```
+docker tag frontend-react-js:latest $ECR_FRONTEND_REACT_URL:latest
+```
+
+push the image
+```
+docker push $ECR_FRONTEND_REACT_URL:latest
+```
+
+create task defintions folder and frontend-react-js.json
+create ecs for frontend with the task-defintion we created
+```
+aws ecs register-task-definition --cli-input-json file://aws/task-definitions/frontend-react-js.json
+```
+
+create frontend service
+```
+aws ecs create-service --cli-input-json file://aws/json/service-frontend-react-js.json
+```
