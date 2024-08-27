@@ -315,3 +315,50 @@ create frontend service
 ```
 aws ecs create-service --cli-input-json file://aws/json/service-frontend-react-js.json
 ```
+
+## create docker prod file for backend and build it
+before building, login into ecr, in backend-flask directory
+```
+docker build -f Dockerfile.prod -t backend-flask-prod .
+```
+
+docker run
+```
+docker run --rm \
+-p 4567:4567 \
+-e FRONTEND_UR="https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}" \
+-e BACKEND_UR="https://4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}" \
+-e OTEL_SERVICE_NAM="backend-flask" \
+-e OTEL_EXPORTER_OTLP_ENDPOIN="https://api.honeycomb.io" \
+-e OTEL_EXPORTER_OTLP_HEADER="x-honeycomb-team=${HONEYCOMB_API_KEY}" \
+-e AWS_XRAY_UR="*4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}*" \
+-e AWS_XRAY_DAEMON_ADDRES="xray-daemon:2000" \
+-e AWS_DEFAULT_REGIO="${AWS_DEFAULT_REGION}" \
+-e AWS_ACCESS_KEY_I="${AWS_ACCESS_KEY_ID}" \
+-e AWS_SECRET_ACCESS_KE="${AWS_SECRET_ACCESS_KEY}" \
+-e ROLLBAR_ACCESS_TOKE="${ROLLBAR_ACCESS_TOKEN}" \
+-e AWS_COGNITO_USER_POOL_I="${AWS_COGNITO_USER_POOL_ID}" \
+-e AWS_COGNITO_USER_POOL_CLIENT_I="${AWS_COGNITO_USER_POOL_CLIENT_ID}" \
+-e CONNECTION_UR="postgresql://postgres:password@db:5432/cruddur" \
+-e AWS_ENDPOINT_UR="http://dymanodb-local:8000" \
+-it backend-flask-prod
+```
+
+## create docker prod file for frontend and build it
+before building, login into ecr, in frontend-react-js directory
+```
+docker build -f Dockerfile.prod -t frontend-react-js-prod .
+```
+
+docker run
+```
+docker build \
+--build-arg REACT_APP_BACKEND_URL="http://cruddur-alb-1426206816.ap-south-1.elb.amazonaws.com:4567" \
+--build-arg REACT_APP_AWS_PROJECT_REGION="$AWS_DEFAULT_REGION" \
+--build-arg REACT_APP_AWS_COGNITO_REGION="$AWS_DEFAULT_REGION" \
+--build-arg REACT_APP_AWS_USER_POOLS_ID="ap-south-1_BPT0GRe9s" \
+--build-arg REACT_APP_CLIENT_ID="4fa5voa45rvabik984t0kjdu3h" \
+-t frontend-react-js \
+-f Dockerfile.prod \
+.
+```
