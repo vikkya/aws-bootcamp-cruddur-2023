@@ -1,8 +1,8 @@
 #! /usr/bin/bash
 
 -e # stop if any line fails
-
-bin_path="$(realpath .)/bin/db"
+ABS_PATH=$(readlink -f "$0")
+bin_path="$ABS_PATH/bin/db"
 
 source "$bin_path/drop"
 source "$bin_path/create"

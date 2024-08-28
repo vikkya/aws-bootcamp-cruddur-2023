@@ -12,7 +12,7 @@ tasks:
       sudo ./aws/install
       cd $THEIA_WORKSPACE_ROOT
       export GITPOD_IP=$(curl ifconfig.me)
-      source  "$THEIA_WORKSPACE_ROOT/backend-flask/bin/rds/update-sg-rule"
+      source  "$THEIA_WORKSPACE_ROOT/bin/rds/update-sg-rule"
   - name: postgres
     command: |
       curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
