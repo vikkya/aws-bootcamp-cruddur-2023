@@ -362,3 +362,9 @@ docker build \
 -f Dockerfile.prod \
 .
 ```
+
+created two folder backend and frontend in bin folder
+moved files from bin/docker, bin/ecs to respective folders
+
+ex - frontend-react-js-prod to run inside frontend folder
+backend-flask-prod to run inside backend folder
