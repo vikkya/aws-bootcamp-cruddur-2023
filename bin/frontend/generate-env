@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require 'erb'
+
+puts "Frontend react js erb file"
+
+template = File.read '.env.frontend-react-js.erb'
+content = ERB.new(template).result(binding)
+filename = '.env.frontend-react-js'
+File.write(filename, content)
