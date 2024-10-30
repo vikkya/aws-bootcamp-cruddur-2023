@@ -7,7 +7,7 @@ PROJECT_PATH=$(dirname $BIN_PATH)
 ENVFILE_PATH = "$PROJECT_PATH\.env.backend-flask"
 
 docker run --rm \
---env_file $ENVFILE_PATH \
+--env-file $ENVFILE_PATH \
 --network cruddur-net \
 --publish 4567:4567 \
 -it backend-flask-prod

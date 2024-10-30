@@ -7,7 +7,7 @@ PROJECT_PATH=$(dirname $BIN_PATH)
 ENVFILE_PATH="$PROJECT_PATH\frontend-react-js.env"
 
 docker run --rm \
---env_file $ENVFILE_PATH \
+--env-file $ENVFILE_PATH \
 --network cruddur-net \
 --publish 3000:3000 \
 -it frontend-react-js
