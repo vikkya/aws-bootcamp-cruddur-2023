@@ -4,7 +4,7 @@ require 'erb'
 
 puts "Backend flask erb file"
 
-template = File.read '.env.backend-flask.erb'
+template = File.read 'erb/backend-flask.env.erb'
 content = ERB.new(template).result(binding)
-filename = '.env.backend-flask'
+filename = 'backend-flask.env'
 File.write(filename, content)

@@ -1,11 +1,13 @@
 #!/usr/bin/bash
 
-docker build \
---build-arg REACT_APP_BACKEND_URL="http://cruddur-alb-1426206816.ap-south-1.elb.amazonaws.com:4567" \
---build-arg REACT_APP_AWS_PROJECT_REGION="$AWS_DEFAULT_REGION" \
---build-arg REACT_APP_AWS_COGNITO_REGION="$AWS_DEFAULT_REGION" \
---build-arg REACT_APP_AWS_USER_POOLS_ID="ap-south-1_BPT0GRe9s" \
---build-arg REACT_APP_CLIENT_ID="4fa5voa45rvabik984t0kjdu3h" \
--t frontend-react-js \
--f Dockerfile.prod \
-.
+ABS_PATH=$(readlink -f "$0")
+FRONTEND_PATH=$(dirname $ABS_PATH)
+BIN_PATH=$(dirname $FRONTEND_PATH)
+PROJECT_PATH=$(dirname $BIN_PATH)
+ENVFILE_PATH="$PROJECT_PATH\frontend-react-js.env"
+
+docker run --rm \
+--env_file $ENVFILE_PATH \
+--network cruddur-net \
+--publish 3000:3000 \
+-it frontend-react-js
