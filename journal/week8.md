@@ -20,4 +20,5 @@ to bootstrap your cdk use cdk bootstrap cmd, this will create all the necessary 
 cdk bootstrap "aws://aws_account_id/aws_region_ur_using"
 
 to deploy the cdk, run
-cdk deploy
+cdk deploy to deploy the stack in cloudformation
+cdk destory to delete everything with respect to that template
