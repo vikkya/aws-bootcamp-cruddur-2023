@@ -4,7 +4,8 @@ create user pool in aws cognito
 use all deafult options to create the user pool
 don't use sms verification, it will be charged. Use email.
 attributes to save (name, email)
-
+ap-south-1_50SrUlDyB
+cliend_id: 2dqmg2egjpfngdu9cup7njf9nf
 if you get any error like this
 ` Username cannot be of email format, since user pool is configured for email alias`
 while creating the user pool, tick email only.
